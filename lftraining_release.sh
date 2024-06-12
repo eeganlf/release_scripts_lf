@@ -19,7 +19,7 @@ ORGANIZATION_NAME="lftraining"
 echo "Prompting user for course details..."
 read -p "Enter the name of the course (COURSE_NAME): " COURSE_NAME
 read -p "Enter the repository to build (COURSE_REPO): " COURSE_REPO
-read -p "Enter the version of the course (VERSION): " VERSION
+read -p "Enter the version of the course (e-learning version is format yyyy-mm-dd) (VERSION): " VERSION
 read -p "Enter 'e' for elearning or 'i' for ILT: " COURSE_TYPE
 
 echo "User inputs received."
@@ -45,13 +45,13 @@ echo "Repositories cloned."
 prompt_continue
 
 # Sync cm-interaction
-echo "Syncing cm-interaction..."
+echo "Creating local course directory for cm-interaction..."
 mkdir -p cm-interaction/$COURSE_NAME
-cd cm-interaction
-echo "y" | ./sync_cm_download.sh $COURSE_NAME
-cd ..
+# cd cm-interaction
+# echo "y" | ./sync_cm_download.sh $COURSE_NAME
+# cd ..
 
-echo "cm-interaction synced."
+echo "Local course directory in cm-interaction directory created."
 prompt_continue
 
 # Clone course repo inside LFCW
@@ -65,7 +65,7 @@ prompt_continue
 # Create RELEASE directory
 echo "Creating RELEASE directory..."
 mkdir -p RELEASE/$COURSE_NAME
-
+mkdir RELEASE/BLURBS
 echo "RELEASE directory created."
 prompt_continue
 
@@ -146,6 +146,10 @@ cd ..
 
 echo "Navigated back to LFCW and ran release_and_upload.sh."
 prompt_continue
+echo "Cleaning up"
+cd $COURSE_NAME
+make clean
+cd ..
 
 # Copy SOL and RES files
 echo "Copying SOL and RES files..."
@@ -158,7 +162,7 @@ prompt_continue
 # Sync cm-interaction
 echo "Syncing cm-interaction..."
 cd ../cm-interaction
-./sync_cm.sh $COURSE_NAME
+./sync_cm_nodelete.sh $COURSE_NAME
 
 echo "cm-interaction synced."
 prompt_continue
@@ -166,8 +170,8 @@ prompt_continue
 # Reminders
 if [ "$COURSE_TYPE" == "i" ]; then
    echo "Reminding user of post-script actions..."
-   echo "Don’t forget to compare long outline.html with outline on wordpress site and update wordpress site if necessary, reach out to marketing for wordpress access"
-   echo "Don’t forget to upload the following files found in the RELEASE/$COURSE_NAME directory: $COURSE_NAME'_'$VERSION.pdf, '$COURSE_NAME' $COURSE_NAME-COVER-FRONT_V$VERSION.pdf and $COURSE_NAME-COVER-BACK_V$VERSION.pdf pdfs to printer at https://upload.zebraprintsolutions.com/index-sales.php"
+   echo "Don’t forget to compare RELEASE/$COURSE_NAME/V$VERSION/"$COURSE_NAME"-long-outline_V"$VERSION.html  " with outline on wordpress site and update wordpress site if necessary, reach out to marketing for wordpress access. Documentation for updating can be found here: https://training.linuxfoundation.org/wp-admin"
+   echo "Don’t forget to upload the following files found in the RELEASE/$COURSE_NAME/V$VERSION directory:" $COURSE_NAME"_"$VERSION.pdf", $COURSE_NAME-COVER-FRONT_V$VERSION.pdf and $COURSE_NAME-COVER-BACK_V$VERSION.pdf pdfs to printer at https://upload.zebraprintsolutions.com/index-sales.php"
    echo "Don’t forget to update version to $VERSION in https://docs.google.com/spreadsheets/d/1zCsRyPDufgLK4ihgZ1x4iLZsjLaOZceDl1dA5hf1pqw/edit#gid=0"
    echo "Don’t forget to email instructors@lists.linuxfoundation.org with subject: Release of $COURSE_NAME version $VERSION along with the message: Hi All, It is our pleasure to announce the release of version $VERSION of $COURSE_NAME. Authors and/or maintainers may wish to comment further on this release."
 else
