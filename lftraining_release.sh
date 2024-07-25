@@ -162,6 +162,7 @@ prompt_continue
 # Sync cm-interaction
 echo "Syncing cm-interaction..."
 cd ../cm-interaction
+chmod +x sync_cm_nodelete.sh
 ./sync_cm_nodelete.sh $COURSE_NAME
 
 echo "cm-interaction synced."
