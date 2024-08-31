@@ -130,10 +130,10 @@ if [ "$COURSE_TYPE" == "e" ]; then
     make clean
     cd ../$COURSE_NAME
     echo "Running make for elearning..."
-    docker run --rm -v $(pwd):/$(basename $(pwd)) --user $(id -u):$(id -g) --workdir /$(basename $(pwd)) eeganlf/tex-build:v1.0 /bin/bash -c "make release-elearning"
+    docker run --rm -v $(pwd):/$(basename $(pwd)) --user $(id -u):$(id -g) --workdir /$(basename $(pwd)) eeganlf/tex-build:v1.1 /bin/bash -c "make release-elearning"
 else
     echo "Running make for ILT..."
-    docker run --rm -v $(pwd):/$(basename $(pwd)) --user $(id -u):$(id -g) --workdir /$(basename $(pwd)) eeganlf/tex-build:v1.0 /bin/bash -c "make release-full"
+    docker run --rm -v $(pwd):/$(basename $(pwd)) --user $(id -u):$(id -g) --workdir /$(basename $(pwd)) eeganlf/tex-build:v1.1 /bin/bash -c "make release-full"
 fi
 
 echo "Make command executed based on course type."
