@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(bash -n /home/eric/lfeducation/lftraining/release_scripts_lf/lftraining_release.sh)"
+    ]
+  }
+}
