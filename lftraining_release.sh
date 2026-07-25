@@ -1,13 +1,20 @@
 #!/bin/bash
 # mkdir --parents ../RELEASE/$COURSE_NAME/outlines/; mv $COURSE_NAME_$(git describe --tags --abbrev=0.txt) $_
+
+# Danger mode: when set to 1, prompt_continue skips all prompts and the script runs to completion
+DANGER_MODE=0
+
 # Function to prompt user to continue or exit
 prompt_continue() {
+    # In danger mode, skip all prompts and continue automatically
+    [ "$DANGER_MODE" = "1" ] && return
     while true; do
-        read -p "Would you like to continue? (y/n): " choice
+        read -p "Would you like to continue? (y/n, or d = danger: run to completion with no more prompts): " choice
         case $choice in
             [Yy]* ) break;;
             [Nn]* ) exit;;
-            * ) echo "Please answer y or n.";;
+            [Dd]* ) DANGER_MODE=1; echo "DANGER MODE ENABLED — running to completion with no further prompts."; break;;
+            * ) echo "Please answer y, n, or d.";;
         esac
     done
 }
@@ -148,10 +155,10 @@ if [ "$COURSE_TYPE" == "e" ]; then
     make clean
     cd ../$COURSE_NAME
     echo "Running make for elearning..."
-    docker run --rm -v $(pwd):/$(basename $(pwd)) --user $(id -u):$(id -g) --workdir /$(basename $(pwd)) eeganlf/tex-build:v1.0 /bin/bash -c "make release-elearning"
+    docker run --rm -v $(pwd):/$(basename $(pwd)) --user $(id -u):$(id -g) --workdir /$(basename $(pwd)) eeganlf/lf-tex-full-2025:v1.0 /bin/bash -c "make release-elearning"
 else
     echo "Running make for ILT..."
-    docker run --rm -v $(pwd):/$(basename $(pwd)) --user $(id -u):$(id -g) --workdir /$(basename $(pwd)) eeganlf/tex-build:v1.0 /bin/bash -c "make release-full"
+    docker run --rm -v $(pwd):/$(basename $(pwd)) --user $(id -u):$(id -g) --workdir /$(basename $(pwd)) eeganlf/lf-tex-full-2025:v1.0 /bin/bash -c "make release-full"
 fi
 
 echo "Make command executed based on course type."
@@ -181,7 +188,11 @@ prompt_continue
 echo "Syncing cm-interaction..."
 cd ../cm-interaction
 chmod +x sync_cm_nodelete.sh
-./sync_cm_nodelete.sh $COURSE_NAME
+if [ "$DANGER_MODE" = "1" ]; then
+    echo "y" | ./sync_cm_nodelete.sh $COURSE_NAME
+else
+    ./sync_cm_nodelete.sh $COURSE_NAME
+fi
 
 echo "cm-interaction synced."
 prompt_continue
